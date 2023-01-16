@@ -14,7 +14,7 @@ library(tidyverse)
 
 ```{r}
 # Import data
-icd10cm_codes_2020 <- read_delim("/Users/k.listila/Desktop/icd10cm_codes_2020.txt", 
+icd10cm_codes_2020 <- read_delim("/Users/jennifer/Desktop/icd10cm_codes_2020.txt", 
                    delim = "\t", 
                    escape_double = FALSE, 
                    col_names = FALSE, 
@@ -37,8 +37,8 @@ There are 1058 codes for the first chapter “Certain infectious and parasitic d
 
 ```{r}
 # Import data
-inpatient_claims <- read.csv("/Users/k.listila/Desktop/DE1_0_2008_to_2010_Inpatient_Claims_Sample_1.csv")
-beneficiary_summary <- read.csv("/Users/k.listila/Desktop/DE1_0_2008_Beneficiary_Summary_File_Sample_1.csv")
+inpatient_claims <- read.csv("/Users/jennifer/Desktop/DE1_0_2008_to_2010_Inpatient_Claims_Sample_1.csv")
+beneficiary_summary <- read.csv("/Users/jennifer/Desktop/DE1_0_2008_Beneficiary_Summary_File_Sample_1.csv")
 ```
 
 ```{r}
