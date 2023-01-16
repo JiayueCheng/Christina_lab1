@@ -1,0 +1,70 @@
+---
+title: "lab 1 Big Data"
+author: "Christina Zhen"
+date: "2023-01-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Problem 2
+
+```{r}
+# Import data
+icd10cm_codes_2020 <- read_delim("/Users/k.listila/Desktop/icd10cm_codes_2020.txt", 
+                   delim = "\t", 
+                   escape_double = FALSE, 
+                   col_names = FALSE, 
+                   trim_ws = TRUE)
+code <- icd10cm_codes_2020 %>%
+  separate(col = X1, into = c("ICD10", "description"), sep = 7)
+head(code)
+```
+
+
+```{r}
+# Find a number of different diagnoses for the first chapter
+first_chapter <- code %>%
+  filter(substr(ICD10, 1, 1) == "A" | substr(ICD10, 1, 1) == "B")
+head(first_chapter)
+```
+There are 1058 codes for the first chapter “Certain infectious and parasitic diseases”.
+
+# Problem 3
+
+```{r}
+# Import data
+inpatient_claims <- read.csv("/Users/k.listila/Desktop/DE1_0_2008_to_2010_Inpatient_Claims_Sample_1.csv")
+beneficiary_summary <- read.csv("/Users/k.listila/Desktop/DE1_0_2008_Beneficiary_Summary_File_Sample_1.csv")
+```
+
+```{r}
+# Select only first admission for each patient
+first_admission <- inpatient_claims %>%
+  select(DESYNPUF_ID, CLM_ADMSN_DT) %>%
+  group_by(DESYNPUF_ID) %>%
+  summarize(first_admission_date = min(CLM_ADMSN_DT))
+head(first_admission)
+```
+
+```{r}
+# Find the race distribution of opioid overuse
+df <- merge(inpatient_claims, beneficiary_summary, by = "DESYNPUF_ID")
+df <- df %>%
+  select(DESYNPUF_ID, BENE_RACE_CD, ICD9_DGNS_CD_1:ICD9_DGNS_CD_10)
+
+idx <- which(apply(df, 1, function(x) any(x %in% c('30400', '30401', '30402', '30403', '30470', '30471', '30472', '30473', '30550', '30551', '30552', '30553', '96500', '96509', 'E8502', 'E9352'))))
+
+opioid_overuse <- df[idx, ] %>%
+  distinct(DESYNPUF_ID, .keep_all = TRUE) %>%
+  select(DESYNPUF_ID, BENE_RACE_CD) %>%
+  group_by(BENE_RACE_CD) %>%
+  summarize(n = n()) %>%
+  mutate(prop = round(n/sum(n), 2))
+opioid_overuse
+```
+
+According to the result, there are 461 White people (84%), 62 Black people (11%), 9 Hispanic people (2%) and 16 people who belong to other races (3%) have a Diagnosis Code related to opioid overuse.
